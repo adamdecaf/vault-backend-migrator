@@ -1,7 +1,9 @@
 package cmd
 
 import(
+	"github.com/hashicorp/vault/api"
 	"strings"
+	"os"
 )
 
 type Config struct {
@@ -11,6 +13,12 @@ type Config struct {
 }
 
 func NewConfig(datatype, address, file *string) *Config {
+	// This is checked before creating a vault client and reading from the env vars
+	// for VAULT_ADDR, so check that before failing.
+	if empty(address) {
+		v := os.Getenv(api.EnvVaultCACert)
+		address = &v
+	}
 	if empty(datatype, address, file) {
 		return nil
 	}
