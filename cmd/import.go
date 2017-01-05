@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func Import(config Config) error {
-	fmt.Printf("Import - %s", config.DataType)
+func Import(address, file string) error {
+	fmt.Printf("Import - %s", address)
 	return nil
 }

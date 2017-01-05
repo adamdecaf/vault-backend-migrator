@@ -1,10 +1,10 @@
-package cmd
+package vault
 
 import (
 	"github.com/hashicorp/vault/api"
 )
 
-func newVault(config Config) (*api.Client, error) {
+func NewClient(address string) (*api.Client, error) {
 	cfg := api.DefaultConfig()
 
 	// Read vault env variables
@@ -14,7 +14,7 @@ func newVault(config Config) (*api.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = client.SetAddress(config.Address); err != nil {
+	if err = client.SetAddress(address); err != nil {
 		return nil, err
 	}
 	return client, nil

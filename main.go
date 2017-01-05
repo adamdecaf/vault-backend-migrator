@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/adamdecaf/vault-backend-migrator/cmd"
+	"github.com/hashicorp/vault/api"
+	"strings"
 	"os"
 )
 
@@ -25,13 +27,18 @@ const Version = "0.0.1-dev"
 func main() {
 	flag.Parse()
 
+	// Read VAULT_ADDR if '-address' is empty since we're about to check it.
+	if empty(address) {
+		v := os.Getenv(api.EnvVaultCACert)
+		address = &v
+	}
+
 	// Import
 	if im != nil && *im != "" {
-		config := cmd.NewConfig(im, address, file)
-		if config == nil {
+		if empty(address, file) {
 			exit()
 		}
-		err := cmd.Import(*config)
+		err := cmd.Import(*address, *file)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -41,11 +48,10 @@ func main() {
 
 	// Export
 	if ex != nil && *ex != "" {
-		config := cmd.NewConfig(ex, address, file)
-		if config == nil {
+		if empty(address, file) {
 			exit()
 		}
-		err := cmd.Export(*config)
+		err := cmd.Export(*address, *file)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -62,6 +68,16 @@ func main() {
 	// No commands, print help.
 	flag.Usage()
 	os.Exit(1)
+}
+
+// Do we have any empty strings?
+func empty(s ...*string) bool {
+	for _,v := range s {
+		if v == nil || len(strings.TrimSpace(*v)) == 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func exit() {

@@ -3,23 +3,17 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/adamdecaf/vault-backend-migrator/vault"
 )
 
-func Export(config Config) error {
-	vault, err := newVault(config)
+func Export(address, file string) error {
+	vault, err := vault.NewClient(address)
 	if vault == nil || err != nil {
 		if err != nil {
 			return err
 		}
 		return errors.New("Unable to create vault client")
 	}
-
-	// fmt.Printf("%v\n", *vault.Logical())
-
-	// fmt.Println(vault.Address())
-	// fmt.Println(vault.Token())
-
-	// vault.Auth()
 
 	// list
 	secret, err := vault.Logical().List("secret/banno/")
