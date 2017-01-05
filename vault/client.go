@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/hashicorp/vault/api"
 	"os"
@@ -42,7 +43,6 @@ func (v *Vault) List(path string) *[]string {
 	}
 
 	r, ok := secret.Data["keys"].([]interface{})
-	fmt.Println(ok)
 	if ok {
 		out := make([]string, len(r))
 		for i := range r {
@@ -51,5 +51,21 @@ func (v *Vault) List(path string) *[]string {
 		return &out
 	}
 	return nil
+}
 
+// todo: note that this returns base64 encoded strings
+func (v *Vault) Read(path string) *string {
+	s, err := v.c.Logical().Read(path)
+	if err != nil {
+		fmt.Printf("Error reading secrets, err=%v", err)
+		return nil
+	}
+	r, ok := s.Data["value"].(string)
+	if !ok {
+		return nil
+	}
+
+	// Encode to base64
+	e := base64.StdEncoding.EncodeToString([]byte(r))
+	return &e
 }
