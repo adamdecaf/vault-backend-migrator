@@ -4,34 +4,45 @@ import (
 	"errors"
 	"fmt"
 	"github.com/adamdecaf/vault-backend-migrator/vault"
+	"path"
+	"strings"
 )
 
-func Export(address, file string) error {
-	vault, err := vault.NewClient(address)
-	if vault == nil || err != nil {
+func Export(path, file string) error {
+	v, err := vault.NewClient()
+	if v == nil || err != nil {
 		if err != nil {
 			return err
 		}
 		return errors.New("Unable to create vault client")
 	}
 
-	// list
-	secret, err := vault.Logical().List("secret/banno/")
-	if err != nil {
-		return fmt.Errorf("Error reading secrets, err=%v", err)
+	// Make sure path has a trailing slash
+	if !strings.HasSuffix(path, "/") {
+		path = path + "/"
 	}
-	// if secret == nil {
-	// 	fmt.Println("bad")
-	// }
 
-	fmt.Printf("A - %v\n", secret)
-	// fmt.Printf("AA - %v\n", secret.WrapInfo)
+	// Get all nested keys
+	var all []string
+	accumulate(&all, *v, path)
 
-	// read
-	secret, err = vault.Logical().Read("secret/banno/config/small-deployable-web-server")
-	if err != nil {
-		return fmt.Errorf("Error reading secrets, err=%v", err)
-	}
-	fmt.Printf("B - %v\n", secret)
+	// Read each key's value
+
 	return nil
+}
+
+func accumulate(acc *[]string, v vault.Vault, p string) {
+	if strings.HasSuffix(p, "/") {
+		// Another level exists!
+		res := v.List(p)
+		if res == nil {
+			fmt.Printf("nil, p=%v\n", p)
+			return
+		}
+		for _,k := range *res {
+			accumulate(acc, v, path.Join(p, k))
+		}
+	} else {
+		*acc = append(*acc, p)
+	}
 }
