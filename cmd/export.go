@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"path/filepath"
-	"os"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/adamdecaf/vault-backend-migrator/vault"
 	"io/ioutil"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -53,7 +53,7 @@ func Export(path, file string) error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	abs, err := filepath.Abs(path)
+	abs, err := filepath.Abs(file)
 	if err != nil {
 		fmt.Println(err)
 	}
