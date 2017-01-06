@@ -32,6 +32,8 @@ func NewClient() (*Vault, error) {
 	}, nil
 }
 
+// List the keys at at given vault path. This has only been tested on the generic backend.
+// It will return nil if something goes wrong.
 func (v *Vault) List(path string) *[]string {
 	secret, err := v.c.Logical().List(path)
 	if secret == nil || err != nil {
