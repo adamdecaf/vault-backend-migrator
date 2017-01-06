@@ -53,7 +53,8 @@ func (v *Vault) List(path string) *[]string {
 	return nil
 }
 
-// todo: note that this returns base64 encoded strings
+// Read accepts a vault path to read the data out of. It will return a pointer to
+// a base64 encoded string representing the secret's data.
 func (v *Vault) Read(path string) *string {
 	s, err := v.c.Logical().Read(path)
 	if err != nil {
@@ -70,7 +71,7 @@ func (v *Vault) Read(path string) *string {
 	return &e
 }
 
-// todo: note that this expects base64 encoded data
+// Write takes in a vault path and base64 encoded data to be written at that path.
 func (v *Vault) Write(path, data string) error {
 	b, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
