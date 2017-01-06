@@ -38,7 +38,7 @@ func (v *Vault) List(path string) *[]string {
 		if err == nil {
 			fmt.Println("Unable to read path, does it exist?")
 		}
-		fmt.Println("Error reading secrets, err=%v", err)
+		fmt.Printf("Error reading secrets, err=%v\n", err)
 		return nil
 	}
 
