@@ -69,3 +69,25 @@ func (v *Vault) Read(path string) *string {
 	e := base64.StdEncoding.EncodeToString([]byte(r))
 	return &e
 }
+
+// todo: note that this expects base64 encoded data
+func (v *Vault) Write(path, data string) error {
+	b, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return err
+	}
+
+	d := make(map[string]interface{})
+	d["value"] = string(b)
+
+	secret, err := v.c.Logical().Write(path, d)
+	if secret == nil {
+		return fmt.Errorf("No secret returned when writing to %s", path)
+	}
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(secret)
+	return nil
+}
