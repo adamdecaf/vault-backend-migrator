@@ -57,33 +57,42 @@ func (v *Vault) List(path string) *[]string {
 
 // Read accepts a vault path to read the data out of. It will return a pointer to
 // a base64 encoded string representing the secret's data.
-func (v *Vault) Read(path string) *string {
+func (v *Vault) Read(path string) map[string]string {
+	out := make(map[string]string)
+
 	s, err := v.c.Logical().Read(path)
 	if err != nil {
 		fmt.Printf("Error reading secrets, err=%v", err)
 		return nil
 	}
-	r, ok := s.Data["value"].(string)
-	if !ok {
-		return nil
+
+	// Encode all k,v pairs
+	for k,v := range s.Data {
+		r, ok := v.(string)
+		if !ok {
+			fmt.Printf("error reading value at %s, key=%s\n", path, k)
+		}
+		e := base64.StdEncoding.EncodeToString([]byte(r))
+		out[k] = e
 	}
 
-	// Encode to base64
-	e := base64.StdEncoding.EncodeToString([]byte(r))
-	return &e
+	return out
 }
 
 // Write takes in a vault path and base64 encoded data to be written at that path.
-func (v *Vault) Write(path, data string) error {
-	b, err := base64.StdEncoding.DecodeString(data)
-	if err != nil {
-		return err
+func (v *Vault) Write(path string, data map[string]string) error {
+	body := make(map[string]interface{})
+
+	// Decode the base64 values
+	for k,v := range data {
+		b, err := base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+		body[k] = string(b)
 	}
 
-	d := make(map[string]interface{})
-	d["value"] = string(b)
-
-	secret, err := v.c.Logical().Write(path, d)
+	secret, err := v.c.Logical().Write(path, body)
 	if secret == nil {
 		return fmt.Errorf("No secret returned when writing to %s", path)
 	}
@@ -91,6 +100,5 @@ func (v *Vault) Write(path, data string) error {
 		return err
 	}
 
-	fmt.Println(secret)
 	return nil
 }

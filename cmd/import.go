@@ -48,9 +48,13 @@ func Import(path, file string) error {
 	}
 
 	// Write each keypair to vault
-	for _, pair := range wrap.Data {
-		fmt.Printf("Writing %s\n", pair.Key)
-		v.Write(pair.Key, pair.Value)
+	for _, item := range wrap.Data {
+		data := make(map[string]string)
+		for _,kv := range item.Pairs {
+			data[kv.Key] = kv.Value
+		}
+		fmt.Printf("Writing %s\n", item.Path)
+		v.Write(item.Path, data)
 	}
 
 	return nil

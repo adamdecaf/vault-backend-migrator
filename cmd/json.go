@@ -4,7 +4,11 @@ package cmd
 
 // Json formatting for export and import
 type Wrap struct {
-	Data []Pair `json:"data"`
+	Data []Item `json:"data"`
+}
+type Item struct {
+	Path string `json:"path"`
+	Pairs []Pair `json:"pairs"`
 }
 type Pair struct {
 	Key string `json:"key"`

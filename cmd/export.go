@@ -37,18 +37,23 @@ func Export(path, file string) error {
 
 	// Read each key's value
 	fmt.Println("Reading all secrets")
-	var pairs []Pair
-	for _,k := range all {
-		s := v.Read(k)
-		if s == nil {
-			fmt.Printf("invalid read on %s\n", k)
+	var items []Item
+	for _,p := range all {
+		kvs := v.Read(p)
+		if kvs == nil {
+			fmt.Printf("invalid read on %s\n", p)
 			continue
 		}
-		pairs = append(pairs, Pair{Key: k, Value: *s})
+
+		var pairs []Pair
+		for k,v := range kvs {
+			pairs = append(pairs, Pair{Key: k, Value: v})
+		}
+		items = append(items, Item{Path: p, Pairs: pairs})
 	}
 
 	// Convert to json and write to a file
-	export := Wrap{Data: pairs}
+	export := Wrap{Data: items}
 	out, err := json.Marshal(&export)
 	if err != nil {
 		fmt.Println(err)
