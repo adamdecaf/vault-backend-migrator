@@ -34,13 +34,13 @@ func NewClient() (*Vault, error) {
 
 // List the keys at at given vault path. This has only been tested on the generic backend.
 // It will return nil if something goes wrong.
-func (v *Vault) List(path string) *[]string {
+func (v *Vault) List(path string) []string {
 	secret, err := v.c.Logical().List(path)
-	if secret == nil || err != nil {
-		if err == nil {
-			fmt.Println("Unable to read path, does it exist?")
-		}
-		fmt.Printf("Error reading secrets, err=%v\n", err)
+	if secret == nil {
+		return nil
+	}
+	if err != nil {
+		fmt.Printf("Unable to read path %q, err=%v\n", path, err)
 		return nil
 	}
 
@@ -50,7 +50,7 @@ func (v *Vault) List(path string) *[]string {
 		for i := range r {
 			out[i] = r[i].(string)
 		}
-		return &out
+		return out
 	}
 	return nil
 }

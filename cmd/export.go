@@ -88,7 +88,7 @@ func accumulate(acc *[]string, v vault.Vault, p string) {
 		*acc = append(*acc, p)
 		return
 	}
-	for _,k := range *res {
+	for _,k := range res {
 		accumulate(acc, v, path.Join(p, k))
 	}
 }
