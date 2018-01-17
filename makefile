@@ -33,7 +33,7 @@ docker: dist
 	docker build -t adamdecaf/vault-backend-migrator:$(VERSION) .
 
 dockerpush: docker
-	docker push -t adamdecaf/vault-backend-migrator:$(VERSION)
+	docker push adamdecaf/vault-backend-migrator:$(VERSION)
 
 release: ci docker dockerpush mkrel upload
 
