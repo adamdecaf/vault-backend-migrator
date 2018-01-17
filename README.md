@@ -50,6 +50,10 @@ Note: It's recommended that you now delete `secrets.json` if you don't need it. 
 
 This tool reads all the `VAULT_*` environment variables as the vault cli does. You likely need to specify those for the address, CA certs, etc.
 
+## Dependencies
+
+I use [golang/dep](https://github.com/golang/dep) for managing the `vendor/` directory. I like to run `dep ensure && dep prune` to keep the tree small.
+
 ## Releases
 
 There are various makefile commands for building parts of the release `make release` builds and pushes everything.
