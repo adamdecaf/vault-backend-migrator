@@ -10,6 +10,8 @@ Right now this tool really only supports the `generic` backend. Other mount poin
 
 You'll want to `go get -f -u github.com/adamdecaf/vault-backend-migrator` this project. It will pull down the vault source code to your GOPATH too.
 
+There's also a [docker image](https://hub.docker.com/r/adamdecaf/vault-backend-migrator): `docker pull adamdecaf/vault-backend-migrator`
+
 ##### Exporting
 
 After pulling the code it's helpful to set a few environment variables. (These may not all be required for your setup.) These variables will be for the vault you're exporting from.
