@@ -1,6 +1,6 @@
-VERSION := $$(grep -Eo '(\d\.\d\.\d)(-dev)?' main.go)
+VERSION := $(shell grep -Eo '(\d\.\d\.\d)(-dev)?' main.go)
 
-.PHONY: build check test
+.PHONY: build check test mkrel upload
 
 linux: linux_amd64
 linux_amd64:
@@ -31,3 +31,20 @@ build: check
 
 docker: dist
 	docker build -t adamdecaf/vault-backend-migrator:$(VERSION) .
+
+dockerpush: docker
+	docker push -t adamdecaf/vault-backend-migrator:$(VERSION)
+
+release: ci docker dockerpush mkrel upload
+
+mkrel:
+ifeq ($(DEV), )
+  $(shell gothub release -u adamdecaf -r vault-backend-migrator -t $(VERSION) --name $(VERSION) --pre-release)
+else
+  $(shell gothub release -u adamdecaf -r vault-backend-migrator -t $(VERSION) --name $(VERSION))
+endif
+
+upload:
+	gothub upload -u adamdecaf -r vault-backend-migrator -t $(VERSION) --name "vault-backend-migrator-linux" --file bin/vault-backend-migrator-linux-amd64
+	gothub upload -u adamdecaf -r vault-backend-migrator -t $(VERSION) --name "vault-backend-migrator-osx" --file bin/vault-backend-migrator-osx-amd64
+	gothub upload -u adamdecaf -r vault-backend-migrator -t $(VERSION) --name "vault-backend-migrator.exe" --file bin/vault-backend-migrator-amd64.exe
