@@ -5,10 +5,10 @@ type Wrap struct {
 	Data []Item `json:"data"`
 }
 type Item struct {
-	Path string `json:"path"`
+	Path  string `json:"path"`
 	Pairs []Pair `json:"pairs"`
 }
 type Pair struct {
-	Key string `json:"key"`
+	Key   string `json:"key"`
 	Value string `json:"value"`
 }

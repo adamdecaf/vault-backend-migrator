@@ -38,7 +38,7 @@ func Export(path, file string) error {
 	// Read each key's value
 	fmt.Println("Reading all secrets")
 	var items []Item
-	for _,p := range all {
+	for _, p := range all {
 		kvs := v.Read(p)
 		if kvs == nil {
 			fmt.Printf("invalid read on %s\n", p)
@@ -46,7 +46,7 @@ func Export(path, file string) error {
 		}
 
 		var pairs []Pair
-		for k,v := range kvs {
+		for k, v := range kvs {
 			pairs = append(pairs, Pair{Key: k, Value: v})
 		}
 		items = append(items, Item{Path: p, Pairs: pairs})
@@ -88,7 +88,7 @@ func accumulate(acc *[]string, v vault.Vault, p string) {
 		*acc = append(*acc, p)
 		return
 	}
-	for _,k := range res {
+	for _, k := range res {
 		accumulate(acc, v, path.Join(p, k))
 	}
 }

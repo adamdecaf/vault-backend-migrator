@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/adamdecaf/vault-backend-migrator/cmd"
-	"strings"
 	"os"
+	"strings"
 )
 
 var (
@@ -64,7 +64,7 @@ func main() {
 
 // Do we have any empty strings?
 func empty(s ...*string) bool {
-	for _,v := range s {
+	for _, v := range s {
 		if v == nil || len(strings.TrimSpace(*v)) == 0 {
 			return true
 		}

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"errors"
+	"fmt"
 	"github.com/adamdecaf/vault-backend-migrator/vault"
 	"io/ioutil"
 	"os"
@@ -50,7 +50,7 @@ func Import(path, file string) error {
 	// Write each keypair to vault
 	for _, item := range wrap.Data {
 		data := make(map[string]string)
-		for _,kv := range item.Pairs {
+		for _, kv := range item.Pairs {
 			data[kv.Key] = kv.Value
 		}
 		fmt.Printf("Writing %s\n", item.Path)

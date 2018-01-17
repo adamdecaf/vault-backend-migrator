@@ -67,7 +67,7 @@ func (v *Vault) Read(path string) map[string]string {
 	}
 
 	// Encode all k,v pairs
-	for k,v := range s.Data {
+	for k, v := range s.Data {
 		r, ok := v.(string)
 		if !ok {
 			fmt.Printf("error reading value at %s, key=%s\n", path, k)
@@ -84,7 +84,7 @@ func (v *Vault) Write(path string, data map[string]string) error {
 	body := make(map[string]interface{})
 
 	// Decode the base64 values
-	for k,v := range data {
+	for k, v := range data {
 		b, err := base64.StdEncoding.DecodeString(v)
 		if err != nil {
 			return err
