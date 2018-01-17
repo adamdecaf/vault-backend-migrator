@@ -1,3 +1,5 @@
+VERSION := $$(grep -Eo '(\d\.\d\.\d)(-dev)?' main.go)
+
 .PHONY: build check test
 
 linux: linux_amd64
@@ -24,5 +26,8 @@ test: check dist
 ci: check dist test
 
 build: check
-	go build -o cert-manage github.com/adamdecaf/vault-backend-migrator
+	go build -o vault-backend-migrator github.com/adamdecaf/vault-backend-migrator
 	@chmod +x vault-backend-migrator
+
+docker: dist
+	docker build -t adamdecaf/vault-backend-migrator:$(VERSION) .
