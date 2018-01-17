@@ -11,6 +11,10 @@ type Vault struct {
 	c *api.Client
 }
 
+func (v *Vault) Client() *api.Client {
+	return v.c
+}
+
 func NewClient() (*Vault, error) {
 	cfg := api.DefaultConfig()
 
@@ -55,8 +59,8 @@ func (v *Vault) List(path string) []string {
 	return nil
 }
 
-// Read accepts a vault path to read the data out of. It will return a pointer to
-// a base64 encoded string representing the secret's data.
+// Read accepts a vault path to read the data out of. It will return a map
+// of base64 encoded values.
 func (v *Vault) Read(path string) map[string]string {
 	out := make(map[string]string)
 
@@ -93,12 +97,11 @@ func (v *Vault) Write(path string, data map[string]string) error {
 	}
 
 	secret, err := v.c.Logical().Write(path, body)
-	if secret == nil {
-		return fmt.Errorf("No secret returned when writing to %s", path)
-	}
 	if err != nil {
 		return err
 	}
-
+	if secret == nil {
+		return fmt.Errorf("No secret returned when writing to %s", path)
+	}
 	return nil
 }
