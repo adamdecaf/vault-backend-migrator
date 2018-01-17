@@ -20,7 +20,7 @@ var (
 	version = flag.Bool("version", false, "Output the version number")
 )
 
-const Version = "0.2.0"
+const Version = "0.2.1-dev"
 
 func main() {
 	flag.Parse()
