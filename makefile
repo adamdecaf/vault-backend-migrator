@@ -37,7 +37,11 @@ dockerpush: docker
 
 release: ci docker dockerpush mkrel upload
 
-mkrel:
+tag:
+	git tag $(VERSION)
+	git push --tags origin $(VERSION)
+
+mkrel: tag
 ifeq ($(DEV), )
   $(shell gothub release -u adamdecaf -r vault-backend-migrator -t $(VERSION) --name $(VERSION) --pre-release)
 else
