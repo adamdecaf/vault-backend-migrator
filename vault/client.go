@@ -71,6 +71,9 @@ func (v *Vault) Read(path string) map[string]string {
 	}
 
 	// Encode all k,v pairs
+	if s == nil || s.Data == nil {
+		return out
+	}
 	for k, v := range s.Data {
 		r, ok := v.(string)
 		if !ok {
