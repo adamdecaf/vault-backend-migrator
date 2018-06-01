@@ -2,7 +2,7 @@
 
 `vault-backend-migrator` is a tool to export and import (migrate) data across vault clusters.
 
-Right now this tool really only supports the `generic` backend. Other mount points often create dynamic secrets that likely should be recreated on the new cluster.
+Right now this tool really only supports the `secret`/`kv` (version 1) backend. Other mount points might work, but many create dynamic secrets behind the scenes or don't support all operations (i.e. LIST).
 
 ### Usage
 
