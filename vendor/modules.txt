@@ -1,0 +1,43 @@
+# github.com/fatih/structs v1.0.0
+github.com/fatih/structs
+# github.com/golang/snappy v0.0.0-20170215233205-553a64147049
+github.com/golang/snappy
+# github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-cleanhttp v0.0.0-20171218145408-d5fe4b57a186
+github.com/hashicorp/go-cleanhttp
+# github.com/hashicorp/go-multierror v0.0.0-20171204182908-b7773ae21874
+github.com/hashicorp/go-multierror
+# github.com/hashicorp/go-rootcerts v0.0.0-20160503143440-6bb64b370b90
+github.com/hashicorp/go-rootcerts
+# github.com/hashicorp/hcl v0.0.0-20171017181929-23c074d0eceb
+github.com/hashicorp/hcl
+github.com/hashicorp/hcl/hcl/ast
+github.com/hashicorp/hcl/hcl/parser
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/hcl/scanner
+github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/json/scanner
+github.com/hashicorp/hcl/json/token
+# github.com/hashicorp/vault v0.9.3
+github.com/hashicorp/vault/api
+github.com/hashicorp/vault/helper/jsonutil
+github.com/hashicorp/vault/helper/parseutil
+github.com/hashicorp/vault/helper/compressutil
+# github.com/mitchellh/go-homedir v0.0.0-20161203194507-b8bc1bf76747
+github.com/mitchellh/go-homedir
+# github.com/mitchellh/mapstructure v0.0.0-20180111000720-b4575eea38cc
+github.com/mitchellh/mapstructure
+# github.com/sethgrid/pester v0.0.0-20171127025028-760f8913c048
+github.com/sethgrid/pester
+# golang.org/x/net v0.0.0-20180826012351-8a410e7b638d
+golang.org/x/net/http2
+golang.org/x/net/http/httpguts
+golang.org/x/net/http2/hpack
+golang.org/x/net/idna
+# golang.org/x/text v0.3.0
+golang.org/x/text/secure/bidirule
+golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm
+golang.org/x/text/transform
