@@ -3,8 +3,9 @@ package vault
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/hashicorp/vault/api"
 	"os"
+
+	"github.com/hashicorp/vault/api"
 )
 
 type Vault struct {
@@ -61,8 +62,8 @@ func (v *Vault) List(path string) []string {
 
 // Read accepts a vault path to read the data out of. It will return a map
 // of base64 encoded values.
-func (v *Vault) Read(path string) map[string]string {
-	out := make(map[string]string)
+func (v *Vault) Read(path string) map[string]interface{} {
+	out := make(map[string]interface{})
 
 	s, err := v.c.Logical().Read(path)
 	if err != nil {
@@ -72,22 +73,31 @@ func (v *Vault) Read(path string) map[string]string {
 
 	// Encode all k,v pairs
 	if s == nil || s.Data == nil {
+		fmt.Printf("No data to read at path, %s\n", path)
 		return out
 	}
 	for k, v := range s.Data {
-		r, ok := v.(string)
-		if !ok {
-			fmt.Printf("error reading value at %s, key=%s\n", path, k)
+		switch t := v.(type) {
+		case string:
+			out[k] = base64.StdEncoding.EncodeToString([]byte(t))
+		case map[string]interface{}:
+			if k == "data" {
+				for x, y := range t {
+					if z, ok := y.(string); ok {
+						out[x] = base64.StdEncoding.EncodeToString([]byte(z))
+					}
+				}
+			}
+		default:
+			fmt.Printf("error reading value at %s, key=%s, type=%T\n", path, k, v)
 		}
-		e := base64.StdEncoding.EncodeToString([]byte(r))
-		out[k] = e
 	}
 
 	return out
 }
 
 // Write takes in a vault path and base64 encoded data to be written at that path.
-func (v *Vault) Write(path string, data map[string]string) error {
+func (v *Vault) Write(path string, data map[string]string, ver string) error {
 	body := make(map[string]interface{})
 
 	// Decode the base64 values
@@ -99,12 +109,15 @@ func (v *Vault) Write(path string, data map[string]string) error {
 		body[k] = string(b)
 	}
 
-	secret, err := v.c.Logical().Write(path, body)
-	if err != nil {
-		return err
+	var err error
+
+	if ver == "2" {
+		d := make(map[string]interface{})
+		d["data"] = body
+		_, err = v.c.Logical().Write(path, d)
+	} else {
+		_, err = v.c.Logical().Write(path, body)
 	}
-	if secret == nil {
-		return fmt.Errorf("No secret returned when writing to %s", path)
-	}
-	return nil
+
+	return err
 }
