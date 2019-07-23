@@ -88,7 +88,7 @@ func TestMigrator__integration(t *testing.T) {
 	for i := range data {
 		client.Write(data[i].path, map[string]string{
 			data[i].key: data[i].value,
-		})
+		}, "1")
 		kv := client.Read(data[i].path)
 		if kv[data[i].key] != data[i].value {
 			t.Fatalf("path=%q, kv[%s]=%q, value=%q, err=%v", data[i].path, data[i].key, kv[data[i].key], data[i].value, err)
@@ -101,7 +101,7 @@ func TestMigrator__integration(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.Remove(tmp.Name())
-	err = commands.Export("secret/", tmp.Name())
+	err = commands.Export("secret/", tmp.Name(), "", "1")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +117,7 @@ func TestMigrator__integration(t *testing.T) {
 	}
 
 	// import
-	err = commands.Import("secret/", tmp.Name())
+	err = commands.Import("secret/", tmp.Name(), "1")
 	if err != nil {
 		t.Fatal(err)
 	}

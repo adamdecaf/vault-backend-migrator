@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/adamdecaf/vault-backend-migrator/vault"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/adamdecaf/vault-backend-migrator/vault"
 )
 
 const (
 	OutputFileMode = 0644
 )
 
-func Export(path, file string) error {
+func Export(path, file, metad, ver string) error {
 	v, err := vault.NewClient()
 	if v == nil || err != nil {
 		if err != nil {
@@ -30,10 +31,21 @@ func Export(path, file string) error {
 		path = path + "/"
 	}
 
+	if ver == "2" {
+		if !strings.HasSuffix(metad, "/") {
+			metad = metad + "/"
+		}
+	}
+
 	// Get all nested keys
 	fmt.Printf("Reading all keys under %s\n", path)
 	var all []string
-	accumulate(&all, *v, path)
+
+	if ver == "2" {
+		accumulate(&all, *v, metad, path)
+	} else {
+		accumulate(&all, *v, path, path)
+	}
 
 	// Read each key's value
 	fmt.Println("Reading all secrets")
@@ -47,7 +59,9 @@ func Export(path, file string) error {
 
 		var pairs []Pair
 		for k, v := range kvs {
-			pairs = append(pairs, Pair{Key: k, Value: v})
+			if str, ok := v.(string); ok {
+				pairs = append(pairs, Pair{Key: k, Value: str})
+			}
 		}
 		items = append(items, Item{Path: p, Pairs: pairs})
 	}
@@ -82,13 +96,13 @@ func Export(path, file string) error {
 	return nil
 }
 
-func accumulate(acc *[]string, v vault.Vault, p string) {
-	res := v.List(p)
+func accumulate(acc *[]string, v vault.Vault, basep string, accump string) {
+	res := v.List(basep)
 	if res == nil { // We ran into a leaf
-		*acc = append(*acc, p)
+		*acc = append(*acc, accump)
 		return
 	}
 	for _, k := range res {
-		accumulate(acc, v, path.Join(p, k))
+		accumulate(acc, v, path.Join(basep, k), path.Join(accump, k))
 	}
 }

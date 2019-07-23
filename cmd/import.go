@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/adamdecaf/vault-backend-migrator/vault"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/adamdecaf/vault-backend-migrator/vault"
 )
 
-func Import(path, file string) error {
+func Import(path, file, ver string) error {
 	abs, err := filepath.Abs(file)
 	if err != nil {
 		return err
@@ -54,7 +55,9 @@ func Import(path, file string) error {
 			data[kv.Key] = kv.Value
 		}
 		fmt.Printf("Writing %s\n", item.Path)
-		v.Write(item.Path, data)
+		if err := v.Write(item.Path, data, ver); err != nil {
+			fmt.Printf("Error %s\n", err)
+		}
 	}
 
 	return nil

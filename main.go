@@ -3,15 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/adamdecaf/vault-backend-migrator/cmd"
 	"os"
 	"strings"
+
+	"github.com/adamdecaf/vault-backend-migrator/cmd"
 )
 
 var (
 	// Actions
 	ex = flag.String("export", "", "The vault path to export")
 	im = flag.String("import", "", "The vault path to import data into")
+	vr = flag.String("ver", "", "KV version")
+	md = flag.String("metadata", "", "Metadata path")
 
 	// Required during export or import
 	file = flag.String("file", "", "The local file location to use")
@@ -30,7 +33,7 @@ func main() {
 		if empty(im, file) {
 			exit()
 		}
-		err := cmd.Import(*im, *file)
+		err := cmd.Import(*im, *file, *vr)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -43,7 +46,7 @@ func main() {
 		if empty(ex, file) {
 			exit()
 		}
-		err := cmd.Export(*ex, *file)
+		err := cmd.Export(*ex, *file, *md, *vr)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
