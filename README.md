@@ -52,7 +52,7 @@ This tool reads all the `VAULT_*` environment variables as the vault cli does. Y
 
 ## Dependencies
 
-I use [golang/dep](https://github.com/golang/dep) for managing the `vendor/` directory. I like to run `dep ensure && dep prune` to keep the tree small.
+This project uses [Go Modules](https://github.com/golang/go/wiki/Modules) and thus requires Go 1.11+.
 
 ## Releases
 
