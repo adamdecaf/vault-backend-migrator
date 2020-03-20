@@ -103,10 +103,6 @@ func accumulate(acc *[]string, v vault.Vault, basep string, accump string) {
 		return
 	}
 	for _, k := range res {
-		if !strings.HasSuffix(k, "/") {
-			*acc = append(*acc, path.Join(basep, k))
-			continue
-		}
 		accumulate(acc, v, path.Join(basep, k), path.Join(accump, k))
 	}
 }
