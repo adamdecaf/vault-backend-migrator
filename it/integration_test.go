@@ -72,10 +72,11 @@ func TestMigrator__integration(t *testing.T) {
 	data := []struct {
 		path  string
 		key   string
-		value string
+		value interface{}
 	}{
 		{"secret/foo", "foo", "YmFyCg=="},          // bar
 		{"secret/bar/baz", "username", "YWRhbQo="}, // adam
+		{"secret/baz", "integer", 100},
 	}
 	os.Setenv("VAULT_ADDR", "http://127.0.0.1:8200")
 	os.Setenv("VAULT_TOKEN", token)
@@ -86,9 +87,18 @@ func TestMigrator__integration(t *testing.T) {
 
 	// write values
 	for i := range data {
-		client.Write(data[i].path, map[string]string{
-			data[i].key: data[i].value,
-		}, "1")
+		m := make(map[string]interface{})
+
+		switch d := data[i].value.(type) {
+		case int:
+			m[data[i].key] = d
+		case string:
+			m[data[i].key] = d
+		default:
+			t.Fatal("Error: unsupported data type")
+		}
+		client.Write(data[i].path, m, "1")
+
 		kv := client.Read(data[i].path)
 		if kv[data[i].key] != data[i].value {
 			t.Fatalf("path=%q, kv[%s]=%q, value=%q, err=%v", data[i].path, data[i].key, kv[data[i].key], data[i].value, err)
