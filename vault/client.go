@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -103,6 +104,12 @@ func (v *Vault) Read(path string) map[string]interface{} {
 						}
 					case string:
 						out[x] = base64.StdEncoding.EncodeToString([]byte(t))
+					case map[string]interface{}:
+						js, err := json.Marshal(&t)
+						if err != nil {
+							fmt.Println(err)
+						}
+						out[x] = base64.StdEncoding.EncodeToString(js)
 					default:
 						fmt.Printf("error reading value at %s, key=%s, type=%T\n", path, k, v)
 					}
@@ -128,7 +135,14 @@ func (v *Vault) Write(path string, data map[string]interface{}, ver string) erro
 			if err != nil {
 				return err
 			}
-			body[k] = string(b)
+			isValid := json.Valid(b)
+			if isValid {
+				var mapValue map[string]interface{}
+				json.Unmarshal(b, &mapValue)
+				body[k] = mapValue
+			} else {
+				body[k] = string(b)
+			}
 		} else {
 			body[k] = v
 		}
@@ -145,4 +159,12 @@ func (v *Vault) Write(path string, data map[string]interface{}, ver string) erro
 	}
 
 	return err
+}
+
+func createKeyValuePairs(m map[string]interface{}) string {
+	b := new(bytes.Buffer)
+	for key, value := range m {
+		fmt.Fprintf(b, "%s:\"%s\"\n", key, value)
+	}
+	return b.String()
 }
