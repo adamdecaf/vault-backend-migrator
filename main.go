@@ -21,6 +21,9 @@ var (
 
 	// Output the version
 	version = flag.Bool("version", false, "Output the version number")
+
+	// JSON formatting
+	formatJson = flag.Bool("pretty", true, "Format JSON output")
 )
 
 const Version = "0.2.1-dev"
@@ -46,7 +49,7 @@ func main() {
 		if empty(ex, file) {
 			exit()
 		}
-		err := cmd.Export(*ex, *file, *md, *vr)
+		err := cmd.Export(*ex, *file, *md, *vr, *formatJson)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

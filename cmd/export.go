@@ -17,7 +17,7 @@ const (
 	OutputFileMode = 0644
 )
 
-func Export(path, file, metad, ver string) error {
+func Export(path, file, metad, ver string, formatJson bool) error {
 	v, err := vault.NewClient()
 	if v == nil || err != nil {
 		if err != nil {
@@ -68,10 +68,19 @@ func Export(path, file, metad, ver string) error {
 
 	// Convert to json and write to a file
 	export := Wrap{Data: items}
-	out, err := json.Marshal(&export)
-	if err != nil {
-		fmt.Println(err)
+	var out []byte
+	if formatJson {
+		out, err = json.MarshalIndent(&export, "", " ")
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		out, err = json.Marshal(&export)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
+
 	abs, err := filepath.Abs(file)
 	if err != nil {
 		fmt.Println(err)

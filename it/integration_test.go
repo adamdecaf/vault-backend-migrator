@@ -101,7 +101,7 @@ func TestMigrator__integration(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.Remove(tmp.Name())
-	err = commands.Export("secret/", tmp.Name(), "", "1")
+	err = commands.Export("secret/", tmp.Name(), "", "1", false)
 	if err != nil {
 		t.Fatal(err)
 	}
