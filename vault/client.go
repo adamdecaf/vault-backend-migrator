@@ -160,11 +160,3 @@ func (v *Vault) Write(path string, data map[string]interface{}, ver string) erro
 
 	return err
 }
-
-func createKeyValuePairs(m map[string]interface{}) string {
-	b := new(bytes.Buffer)
-	for key, value := range m {
-		fmt.Fprintf(b, "%s:\"%s\"\n", key, value)
-	}
-	return b.String()
-}
