@@ -50,7 +50,7 @@ func Import(path, file, ver string) error {
 
 	// Write each keypair to vault
 	for _, item := range wrap.Data {
-		data := make(map[string]string)
+		data := make(map[string]interface{})
 		for _, kv := range item.Pairs {
 			data[kv.Key] = kv.Value
 		}

@@ -9,6 +9,6 @@ type Item struct {
 	Pairs []Pair `json:"pairs"`
 }
 type Pair struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
 }

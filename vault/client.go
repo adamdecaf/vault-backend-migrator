@@ -2,6 +2,7 @@ package vault
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -78,13 +79,38 @@ func (v *Vault) Read(path string) map[string]interface{} {
 	}
 	for k, v := range s.Data {
 		switch t := v.(type) {
+		case json.Number:
+			if n, err := t.Int64(); err == nil {
+				out[k] = n
+			} else if f, err := t.Float64(); err == nil {
+				out[k] = f
+			} else {
+				out[k] = v
+			}
 		case string:
 			out[k] = base64.StdEncoding.EncodeToString([]byte(t))
 		case map[string]interface{}:
 			if k == "data" {
 				for x, y := range t {
-					if z, ok := y.(string); ok {
-						out[x] = base64.StdEncoding.EncodeToString([]byte(z))
+					switch t := y.(type) {
+					case json.Number:
+						if n, err := t.Int64(); err == nil {
+							out[k] = n
+						} else if f, err := t.Float64(); err == nil {
+							out[k] = f
+						} else {
+							out[k] = y
+						}
+					case string:
+						out[x] = base64.StdEncoding.EncodeToString([]byte(t))
+					case map[string]interface{}:
+						js, err := json.Marshal(&t)
+						if err != nil {
+							fmt.Println(err)
+						}
+						out[x] = base64.StdEncoding.EncodeToString(js)
+					default:
+						fmt.Printf("error reading value at %s, key=%s, type=%T\n", path, k, v)
 					}
 				}
 			}
@@ -97,16 +123,28 @@ func (v *Vault) Read(path string) map[string]interface{} {
 }
 
 // Write takes in a vault path and base64 encoded data to be written at that path.
-func (v *Vault) Write(path string, data map[string]string, ver string) error {
+func (v *Vault) Write(path string, data map[string]interface{}, ver string) error {
 	body := make(map[string]interface{})
 
 	// Decode the base64 values
 	for k, v := range data {
-		b, err := base64.StdEncoding.DecodeString(v)
-		if err != nil {
-			return err
+		stringv, ok := v.(string)
+		if ok {
+			b, err := base64.StdEncoding.DecodeString(stringv)
+			if err != nil {
+				return err
+			}
+			isValid := json.Valid(b)
+			if isValid {
+				var mapValue map[string]interface{}
+				json.Unmarshal(b, &mapValue)
+				body[k] = mapValue
+			} else {
+				body[k] = string(b)
+			}
+		} else {
+			body[k] = v
 		}
-		body[k] = string(b)
 	}
 
 	var err error
