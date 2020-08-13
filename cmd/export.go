@@ -63,7 +63,9 @@ func Export(path, file, metad, ver string) error {
 				pairs = append(pairs, Pair{Key: k, Value: str})
 			}
 		}
-		items = append(items, Item{Path: p, Pairs: pairs})
+
+		relativePath := strings.TrimPrefix(p, path)
+		items = append(items, Item{Path: relativePath, Pairs: pairs})
 	}
 
 	// Convert to json and write to a file

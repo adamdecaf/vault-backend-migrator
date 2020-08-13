@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/adamdecaf/vault-backend-migrator/vault"
 )
@@ -15,6 +16,16 @@ func Import(path, file, ver string) error {
 	abs, err := filepath.Abs(file)
 	if err != nil {
 		return err
+	}
+
+	// Make sure path has a leading slash
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+
+	// Make sure path has a trailing slash
+	if !strings.HasSuffix(path, "/") {
+		path = path + "/"
 	}
 
 	// Check the input file exists
@@ -54,8 +65,9 @@ func Import(path, file, ver string) error {
 		for _, kv := range item.Pairs {
 			data[kv.Key] = kv.Value
 		}
-		fmt.Printf("Writing %s\n", item.Path)
-		if err := v.Write(item.Path, data, ver); err != nil {
+		fullPath := path + item.Path
+		fmt.Printf("Writing %s\n", fullPath)
+		if err := v.Write(fullPath, data, ver); err != nil {
 			fmt.Printf("Error %s\n", err)
 		}
 	}
